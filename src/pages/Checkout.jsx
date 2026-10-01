@@ -15,6 +15,7 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
+    if (!user?.userId) return
     let alive = true
     cartApi
       .get(user.userId)

@@ -10,6 +10,7 @@ export default function Orders() {
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
+    if (!user?.userId) return
     setLoading(true)
     setError('')
     try {
@@ -20,7 +21,7 @@ export default function Orders() {
     } finally {
       setLoading(false)
     }
-  }, [user.userId])
+  }, [user?.userId])
 
   useEffect(() => {
     load()

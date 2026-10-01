@@ -11,11 +11,12 @@ export default function Cart() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
-  const load = useCallback(async () => {
+  const fetchCart = useCallback(async (userId) => {
+    if (!userId) return
     setLoading(true)
     setError('')
     try {
-      const data = await cartApi.get(user.userId)
+      const data = await cartApi.get(userId)
       setCart(data)
     } catch (err) {
       setError(err.message || 'Không tải được giỏ hàng')
@@ -23,11 +24,42 @@ export default function Cart() {
     } finally {
       setLoading(false)
     }
-  }, [user.userId])
+  }, [])
 
   useEffect(() => {
-    load()
-  }, [load])
+    let ignore = false
+
+    const loadCartData = async () => {
+      if (!user?.userId) return
+      setLoading(true)
+      setError('')
+      try {
+        const data = await cartApi.get(user.userId)
+        if (!ignore) {
+          setCart(data)
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message || 'Không tải được giỏ hàng')
+          setCart(null)
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadCartData()
+
+    return () => {
+      ignore = true
+    }
+  }, [user?.userId])
+
+  const load = useCallback(() => {
+    return fetchCart(user?.userId)
+  }, [fetchCart, user?.userId])
 
   const updateQty = async (productId, quantity) => {
     try {

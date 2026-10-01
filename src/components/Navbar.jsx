@@ -1,6 +1,7 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { api } from '../api/client'
 
 export default function Navbar() {
   const { isAuthenticated, user, logout, isStaff, isAdmin } = useAuth()
@@ -9,8 +10,12 @@ export default function Navbar() {
 
   const close = () => setOpen(false)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    try{
+      await logout();
+    }catch(error){
+      console.error(error);
+    }
     close()
     navigate('/')
   }
@@ -38,12 +43,16 @@ export default function Navbar() {
 
           {isAuthenticated && (
             <>
-              <NavLink to="/cart" onClick={close}>
-                Giỏ hàng
-              </NavLink>
-              <NavLink to="/orders" onClick={close}>
-                Đơn hàng
-              </NavLink>
+              {!isStaff && (
+                <>
+                  <NavLink to="/cart" onClick={close}>
+                    Giỏ hàng
+                  </NavLink>
+                  <NavLink to="/orders" onClick={close}>
+                    Đơn hàng
+                  </NavLink>
+                </>
+              )}
               <NavLink to="/profile" onClick={close}>
                 {user?.fullName || 'Tài khoản'}
               </NavLink>

@@ -15,6 +15,11 @@ export const authApi = {
 
   me: () => api('/api/User/me'),
 
+  logout: () =>
+    api('/api/User/logout', {
+      method: 'POST',
+    }),
+
   updateUser: (payload) =>
     api('/api/User/update-user', {
       method: 'PUT',

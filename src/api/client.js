@@ -8,10 +8,6 @@ export class ApiError extends Error {
   }
 }
 
-function getToken() {
-  return localStorage.getItem('token')
-}
-
 async function parseError(res) {
   const text = await res.text()
   try {
@@ -35,12 +31,10 @@ export async function api(path, options = {}) {
     ...(options.headers || {}),
   }
 
-  const token = getToken()
-  if (token) headers.Authorization = `Bearer ${token}`
-
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
+    credentials: 'include',
   })
 
   if (res.status === 204) return null
@@ -50,9 +44,11 @@ export async function api(path, options = {}) {
   }
 
   const contentType = res.headers.get('content-type') || ''
+
   if (contentType.includes('application/json')) {
     return res.json()
   }
+
   return res.text()
 }
 
